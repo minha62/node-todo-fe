@@ -57,6 +57,21 @@ function App() {
       console.log('Error', err);
     }
   }
+
+  // Delete todos
+  const deleteItem = async (id) => {
+    try {
+      const deleteTask = todoList.find((item) => item._id === id);
+      const response = await api.delete(`/tasks/${id}`);
+      if (response.status === 200) {
+        getTasks();
+      }
+
+    } catch (err) {
+      console.log('Error', err);
+    }
+  }
+
   return (
     <Container>
       <Row className="add-item-row">
@@ -74,7 +89,11 @@ function App() {
         </Col>
       </Row>
 
-      <TodoBoard todoList={todoList} toggleComplete={toggleComplete} />
+      <TodoBoard
+        todoList={todoList}
+        deleteItem={deleteItem}
+        toggleComplete={toggleComplete}
+      />
     </Container>
   );
 }
