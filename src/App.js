@@ -13,11 +13,17 @@ function App() {
   const [todoList, setTodoList] = useState([]);
   const [todoValue, setTodoValue] = useState("");
 
+  // Read todos
   const getTasks = async () => {
     const response = await api.get('/tasks');
-    console.log("repsone", response);
     setTodoList(response.data.data);
   };
+
+  useEffect(() => {
+    getTasks();
+  }, []);
+
+  // Create todos
   const addTask = async () => {
     try {
       const response = await api.post('/tasks', {
@@ -35,9 +41,22 @@ function App() {
       console.log('Error', err);
     }
   }
-  useEffect(() => {
-    getTasks();
-  }, []);
+
+  // Update todos
+  const toggleComplete = async (id) => {
+    try {
+      const task = todoList.find((item) => item._id === id);
+      console.log('task', task);
+      const response = await api.put(`/tasks/${id}`, {
+        isComplete: !task.isComplete,
+      });
+      if (response.status === 200) {
+        getTasks();
+      }
+    } catch (err) {
+      console.log('Error', err);
+    }
+  }
   return (
     <Container>
       <Row className="add-item-row">
@@ -55,7 +74,7 @@ function App() {
         </Col>
       </Row>
 
-      <TodoBoard todoList={todoList} />
+      <TodoBoard todoList={todoList} toggleComplete={toggleComplete} />
     </Container>
   );
 }
